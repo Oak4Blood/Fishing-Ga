@@ -155,29 +155,48 @@ local MobHuntToggle = CheatTab:CreateToggle({
     Callback = function(MobHunt)
         if MobHunt then
             _G.MobHunt = true
+            local RunService = game:GetService("RunService")
             while _G.MobHunt do
                 task.wait()
                 pcall(function()
                     -- ค้นหาอาวุธที่ใช้
                     local plr = game.Players.LocalPlayer.UserId
-                    for i, v in pairs(game:GetService("ReplicatedStorage").ToolsCache[plr]:GetChildren()) do
+                    for _, v in pairs(game:GetService("ReplicatedStorage").ToolsCache[plr]:GetChildren()) do
                         if v:GetAttribute("type") == "Spears" then
                             spear = v.Name
                         end
                     end
-                    for i, v in pairs(workspace:GetChildren()) do
-                        if v:IsA("Model") and v:FindFirstChild("Hitbox") and v:FindFirstChild("Health") and _G.MobHunt then
-                            local hitbox = v.Hitbox
-                          
+
+                    for _, mob in pairs(workspace:GetChildren()) do
+                        if mob:IsA("Model") and mob:FindFirstChild("Hitbox") and mob:FindFirstChild("Health") and _G.MobHunt then
+                            local hitbox = mob.Hitbox
+                        
+                            local connection
+                            connection = RunService.Heartbeat:Connect(function()
+                                if mob and mob.Parent and mob.Health.Value > 0 and _G.MobHunt then
+                                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
+                                        hitbox.CFrame * CFrame.new(0, hitbox.Size.Y / 2 + 3, 0)
+                                else
+                                    connection:Disconnect()
+                                end
+                            end)
+
                             repeat
                                 task.wait()
-                                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = hitbox.CFrame * CFrame.new(0, hitbox.Size.Y / 2 + 3, 0)
-                                
-game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.SpearThrown:FireServer(spear, v.PrimaryPart.CFrame, v.PrimaryPart.Position, tonumber("1696341607.0" .. math.random(100000, 1000000)))
-                                game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.MonsterHit:FireServer(v, spear, true)
+                                game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.SpearThrown:FireServer(
+                                    spear,
+                                    hitbox.CFrame,
+                                    hitbox.Position,
+                                    tonumber("1696341607.0" .. math.random(100000, 1000000))
+                                )
+                                game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.MonsterHit:FireServer(mob, spear, true)
 
                                 task.wait(2)
-                            until v.Health.Value <= 0 or not _G.MobHunt or v.Parent == nil
+                            until not mob or mob.Health.Value <= 0 or not _G.MobHunt
+
+                            if connection then
+                                connection:Disconnect()
+                            end
                         end
                     end
                 end)
