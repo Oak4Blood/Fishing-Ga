@@ -1,0 +1,340 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local MainWindow = Rayfield:CreateWindow({
+    Name = "Celestialrune Enchanted",
+    Icon = 0,
+    LoadingTitle = "Loading...",
+    LoadingSubtitle = "Script By null_cmd_",
+    Theme = "Default",
+    DisableRayfieldPrompts = false,
+    DisableBuildWarnings = false,
+    ConfigurationSaving = {
+       Enabled = true,
+       FolderName = nil,
+       FileName = "Celestialrune"
+    },
+    Discord = {
+       Enabled = false,
+       Invite = "noinvitelink",
+       RememberJoins = true
+    },
+    KeySystem = false,
+    KeySettings = {
+       Title = "Key?",
+       Subtitle = "Key on Discord Server",
+       Note = "Get Key From Discord",
+       FileName = "Key",
+       SaveKey = true,
+       GrabKeyFromSite = false,
+       Key = {"What da hell"}
+    }
+})
+
+local MainTab = MainWindow:CreateTab("Home")
+local CreditButton = MainTab:CreateButton({
+    Name = "Credit",
+    Callback = function()
+        print("test successful")
+        Rayfield:Notify({
+            Title = "Notification Title",
+            Content = "Contact null_cmd_ on discord",
+            Duration = 6.5,
+            Image = 4483362458,
+         })
+    end,
+})
+
+local CheatTab = MainWindow:CreateTab("Auto")
+local InventorySection = CheatTab:CreateSection("Inventory")
+local SellAllButton = CheatTab:CreateButton({
+    Name = "Sell All",
+    Callback = function()
+        game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.processGameItemSold:InvokeServer("SellEverything")
+    end,
+})
+
+local AutoSellToggle = CheatTab:CreateToggle({
+    Name = "Auto Sell",
+    CurrentValue = false,
+    Callback = function(AutoSell)
+        if AutoSell then
+            _G.AutoSell = true
+            while _G.AutoSell do
+                game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.processGameItemSold:InvokeServer("SellEverything")
+                task.wait(30)
+            end
+        else
+            _G.AutoSell = false
+        end
+    end
+})
+
+local FishingSection = CheatTab:CreateSection("Fishing")
+local AutoFishToggle = CheatTab:CreateToggle({
+    Name = "Auto Fish",
+    CurrentValue = false,
+    Callback = function(AutoFish)
+        if AutoFish then
+            _G.AutoFish = true
+            while _G.AutoFish do
+                task.wait()
+                pcall(function()
+                    local chr = game.Players.LocalPlayer.Character
+                    if not chr:FindFirstChildOfClass("Tool") or (chr:FindFirstChildOfClass("Tool") and chr:FindFirstChildOfClass("Tool"):GetAttribute("type") ~= "Rods") then
+                        local plr = game.Players.LocalPlayer.UserId
+                        for i, v in pairs(game:GetService("ReplicatedStorage").ToolsCache[plr]:GetChildren()) do
+                            if v:GetAttribute("type") == "Rods" then
+                                rod = v
+                            end
+                        end
+                        if rod then
+                            game:GetService("ReplicatedStorage"):WaitForChild("CloudFrameShared"):WaitForChild("DataStreams"):WaitForChild("EquipTool"):FireServer(rod)
+                        end
+                    end
+                    game:GetService("ReplicatedStorage"):WaitForChild("CloudFrameShared"):WaitForChild("DataStreams"):WaitForChild("CastFishingLine"):FireServer()
+                end)
+                task.wait(1)
+                task.spawn(function()
+                    game:GetService("ReplicatedStorage"):WaitForChild("CloudFrameShared"):WaitForChild("DataStreams"):WaitForChild("FishBiting"):InvokeServer()
+                end)
+                task.wait(2.1)
+                game:GetService("ReplicatedStorage"):WaitForChild("CloudFrameShared"):WaitForChild("DataStreams"):WaitForChild("FishCaught"):FireServer()
+            end
+        else
+            _G.AutoFish = false
+        end
+    end
+})
+
+local MobsSection = CheatTab:CreateSection("Mobs")
+local AntiMobToggle = CheatTab:CreateToggle({
+    Name = "Anti-Mob Damage",
+    CurrentValue = false,
+    Callback = function(GodMode)
+        if GodMode then
+            _G.GodMode = true
+            while _G.GodMode do
+                task.wait()
+                pcall(function()
+                    local mobs = game.workspace
+                    for i, v in pairs(mobs:GetChildren()) do
+                        if v.ClassName == "Model" and v:FindFirstChild("Hitbox") and v.Hitbox:FindFirstChild("TouchInterest") then
+                            v.Hitbox:FindFirstChild("TouchInterest"):Destroy()
+                        end
+                    end
+                end)
+            end
+        else
+            _G.GodMode = false
+        end
+    end,
+})
+
+local MobHuntToggle = CheatTab:CreateToggle({
+    Name = "Mob Hunt",
+    CurrentValue = false,
+    Callback = function(MobHunt)
+        if MobHunt then
+            _G.MobHunt = true
+            while _G.MobHunt do
+                task.wait()
+                pcall(function()
+                    local plr = game.Players.LocalPlayer.UserId
+                    for i, v in pairs(game:GetService("ReplicatedStorage").ToolsCache[plr]:GetChildren()) do
+                        if v:GetAttribute("type") == "Spears" then
+                            spear = v.Name
+                        end
+                    end
+                    for i, v in pairs(workspace:GetChildren()) do
+                        if v.ClassName == "Model" and v:FindFirstChild("Hitbox") and _G.MobHunt then
+                            repeat
+                                task.wait()
+                                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.PrimaryPart.CFrame * CFrame.new(0, 0, 20)
+                                game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.SpearThrown:FireServer(spear, v.PrimaryPart.CFrame, v.PrimaryPart.Position, tonumber("1696341607.0" .. math.random(100000, 1000000)))
+                                game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.MonsterHit:FireServer(v, spear, true)
+                                task.wait(2)
+                            until v.Health.Value == 0 or _G.MobHunt == false or v.Parent == nil
+                        end
+                    end
+                end)
+            end
+        else
+            _G.MobHunt = false
+        end
+    end,
+})
+
+local LootsToggle = CheatTab:CreateToggle({
+    Name = "Collect Loots",
+    CurrentValue = false,
+    Callback = function(Loots)
+        if Loots then
+            _G.Loots = true
+            while _G.Loots do
+                task.wait()
+                for i, v in pairs(game:GetService("Workspace").DroppedItems:GetChildren()) do
+                    if v.ClassName == "Model" and v.PrimaryPart ~= nil and v.PrimaryPart.Transparency ~= 1 then
+                        repeat
+                            task.wait()
+                            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.PrimaryPart.CFrame
+                        until v.Parent == nil or v.PrimaryPart == nil or _G.Loots == false
+                    end
+                end
+            end
+        else
+            _G.Loots = false
+        end
+    end
+})
+
+local TweenService = game:GetService("TweenService")
+ local TpMethods = {"Instant", "Tween"}
+ local DefaultTp = "Unknown"
+ local Location = {
+     "Port Jackson", "Eruption Island", "Shadow Isles", "Ancient Shores", "Pharaoh's Dunes", "Monster's Borough 1", "Monster's Borough 2", "Monster's Borough 3"
+ }
+ local DefaultLocation = "Unknown"
+ local TweenSpeed = 100
+ local LocationPositions = {
+     ["Port Jackson"] = CFrame.new(-3, 55, -125),
+     ["Eruption Island"] = CFrame.new(3023, 52, 1323),
+     ["Shadow Isles"] = CFrame.new(2197, 43, -2216),
+     ["Ancient Shores"] = CFrame.new(-2436, 41, -1683),
+     ["Pharaoh's Dunes"] = CFrame.new(-4143, 46, 262),
+     ["Monster's Borough 1"] = CFrame.new(-3248, 46, 2732),
+     ["Monster's Borough 2"] = CFrame.new(-905, 46, 3052),
+     ["Monster's Borough 3"] = CFrame.new(-1571, 88, 1172)
+ }
+ local TeleportTab = MainWindow:CreateTab("Teleport")
+ local Dropdown = TeleportTab:CreateDropdown({
+     Name = "Location",
+     Options = Location,
+     CurrentOption = "Unknown",
+     MultipleOptions = false,
+     Callback = function(option)
+         if type(option) == "table" then
+             DefaultLocation = option[1]
+         else
+             DefaultLocation = option
+         end
+         DefaultLocationPosition = LocationPositions[DefaultLocation] or CFrame.new()  -- อัพเดตตำแหน่งของ CFrame ตามที่เลือก
+         print("Selected Location: ", DefaultLocation)
+         Rayfield:Notify({
+             Title = "Location Selected",
+             Content = "You have selected: " .. DefaultLocation,
+             Duration = 6.5,
+             Image = "location-pin",
+         })
+     end
+ })
+ 
+ 
+ local Dropdown = TeleportTab:CreateDropdown({
+     Name = "Teleport Method",
+     Options = TpMethods,
+     CurrentOption = "Unknown",
+     MultipleOptions = false,
+     Callback = function(option)
+         if type(option) == "table" then
+             DefaultTp = option[1]
+         else
+             DefaultTp = option
+         end
+         print("Selected Teleport Method: ", DefaultTp)
+         Rayfield:Notify({
+             Title = "Teleport Method",
+             Content = DefaultTp,
+             Duration = 6.5,
+             Image = "alarm-clock",
+         })
+     end
+ })
+
+ local Slider = TeleportTab:CreateSlider({
+     Name = "Tween Speed",
+     Range = {20, 190},
+     Increment = 5,
+     Suffix = "Speed",
+     CurrentValue = 90,
+     Flag = "Slider1",
+     Callback = function(Value)
+         if type(Value) == "table" then
+             TweenSpeed = Value[1]
+         else
+             TweenSpeed = Value
+         end
+     end,
+ })
+ 
+local Button = TeleportTab:CreateButton({
+    Name = "Press to Teleport",
+    Callback = function()
+        if DefaultTp == "Instant" then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = DefaultLocationPosition
+        elseif DefaultTp == "Tween" then
+            local destination = DefaultLocationPosition
+            local character = game.Players.LocalPlayer.Character
+            local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+            if humanoidRootPart and character:FindFirstChild("Humanoid") then
+                local distance = (humanoidRootPart.Position - destination.Position).Magnitude
+                local duration = distance / TweenSpeed
+                local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+                local tween = TweenService:Create(humanoidRootPart, tweenInfo, {CFrame = destination})
+                tween:Play()
+                tween.Completed:Wait()
+                humanoidRootPart.CFrame = destination
+            end
+        end
+    end
+})
+
+
+local Section = TeleportTab:CreateSection("Shop")
+local Button = TeleportTab:CreateButton({
+    Name = "Petricia's Pet",
+    Callback = function()
+local args = {
+    [1] = "PetShop",
+    [2] = "MainEntrance"
+}
+game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.EnterDoor:InvokeServer(unpack(args))
+
+    end
+})
+
+local Button = TeleportTab:CreateButton({
+    Name = "Tavern Interior",
+    Callback = function()
+local args = {
+    [1] = "TavernInterior",
+    [2] = "Inside"
+}
+game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.EnterDoor:InvokeServer(unpack(args))
+
+    end
+})
+
+local Button = TeleportTab:CreateButton({
+    Name = "Supplies Store Interior",
+    Callback = function()
+local args = {
+    [1] = "SuppliesStoreInterior",
+    [2] = "Inside"
+}
+
+game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.EnterDoor:InvokeServer(unpack(args))
+
+    end
+})
+
+local Button = TeleportTab:CreateButton({
+    Name = "Boat Shop Interior",
+    Callback = function()
+local args = {
+    [1] = "BoatShopInterior",
+    [2] = "Inside"
+}
+
+game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.EnterDoor:InvokeServer(unpack(args))
+
+    end
+})
