@@ -1,3 +1,10 @@
+print("Anti afk is running")
+game:GetService("Players").LocalPlayer.Idled:connect(function()
+warn("Anti afk ran")
+game:GetService("VirtualUser"):CaptureController()
+game:GetService("VirtualUser"):ClickButton2(Vector2.new())
+end)
+
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local MainWindow = Rayfield:CreateWindow({
     Name = "Celestialrune Enchanted",
@@ -106,6 +113,19 @@ local AutoFishToggle = CheatTab:CreateToggle({
 })
 
 local MobsSection = CheatTab:CreateSection("Mobs")
+
+local Button = CheatTab:CreateButton({
+    Name = "Bypass Anti-Mob Damage (Press This First!)",
+    Callback = function()
+        local mobs = game.workspace
+        for i, v in pairs(mobs:GetDescendants()) do
+            if v.ClassName == "Model" and v:FindFirstChild("Hitbox") and v.Hitbox:FindFirstChild("TouchInterest") then
+                v.Hitbox:FindFirstChild("TouchInterest"):Destroy()
+            end
+        end
+    end
+})
+
 local AntiMobToggle = CheatTab:CreateToggle({
     Name = "Anti-Mob Damage",
     CurrentValue = false,
@@ -184,6 +204,34 @@ local LootsToggle = CheatTab:CreateToggle({
             _G.Loots = false
         end
     end
+})
+
+local ChestsSection = CheatTab:CreateSection("Loot Chest")
+
+local ChestToggle = CheatTab:CreateToggle({
+    Name = "Get All Chests",
+    CurrentValue = false,
+    Callback = function(chest)
+        if chest then
+            _G.chest = true
+            while _G.chest do
+                task.wait()
+                pcall(function()
+                    for i, v in pairs(workspace:GetDescendants()) do
+                        if v.ClassName == "ProximityPrompt" and v.Parent.Name == "HumanoidRootPart" and not v.Parent.Parent:GetAttribute("OpenParticlesType") and v.Enabled and v.ActionText == "Open" and _G.chest then
+                            repeat
+                                task.wait()
+                                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Parent.CFrame
+                                fireproximityprompt(v)
+                            until v.Enabled == false or _G.chest == false
+                        end
+                    end
+                end)
+            end
+        else
+            _G.chest = false
+        end
+    end,
 })
 
 local TweenService = game:GetService("TweenService")
