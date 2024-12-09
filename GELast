@@ -190,11 +190,11 @@ local LootsToggle = CheatTab:CreateToggle({
         if Loots then
             _G.Loots = true
             while _G.Loots do
-                task.wait()
+                wait()
                 for i, v in pairs(game:GetService("Workspace").DroppedItems:GetChildren()) do
                     if v.ClassName == "Model" and v.PrimaryPart ~= nil and v.PrimaryPart.Transparency ~= 1 then
                         repeat
-                            task.wait()
+                            wait()
                             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.PrimaryPart.CFrame
                         until v.Parent == nil or v.PrimaryPart == nil or _G.Loots == false
                     end
