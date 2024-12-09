@@ -164,6 +164,11 @@ local MobHuntToggle = CheatTab:CreateToggle({
                             spear = v.Name
                         end
                     end
+                    for _, v in pairs(game:GetDescendants()) do
+                        if v.Name == "Hitbox" and v:IsA("BasePart") then
+                            v.Anchored = true
+                        end
+                    end
                     for i, v in pairs(workspace:GetChildren()) do
                         if v.ClassName == "Model" and v:FindFirstChild("Hitbox") and _G.MobHunt then
                             repeat
