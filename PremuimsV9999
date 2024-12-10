@@ -212,6 +212,9 @@ local MobHuntToggle = CheatTab:CreateToggle({
                         local player = game.Players.LocalPlayer
                         local character = player.Character or player.CharacterAdded:Wait()
                         local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+                        if not character or not character:FindFirstChild("HumanoidRootPart") then
+                            return
+                        end
                         local spear = nil
                         for _, tool in pairs(game:GetService("ReplicatedStorage").ToolsCache[player.UserId]:GetChildren()) do
                             if tool:GetAttribute("type") == "Spears" then
@@ -264,9 +267,6 @@ local MobHuntToggle = CheatTab:CreateToggle({
                                 task.wait(2)
                             until nearestMob.Health.Value == 0 or _G.MobHunt == false or nearestMob.Parent == nil
                         end
-                        if nearestMob.Health.Value == 0 then
-                            LootsToggle.Callback(true)
-                        end
                     end)
                     while _G.IsLooting do
                         task.wait()
@@ -292,6 +292,9 @@ local LootsToggle = CheatTab:CreateToggle({
                         local player = game.Players.LocalPlayer
                         local character = player.Character or player.CharacterAdded:Wait()
                         local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+                        if not character or not character:FindFirstChild("HumanoidRootPart") then
+                            return
+                        end
                         local droppedItems = game:GetService("Workspace"):FindFirstChild("DroppedItems")
                         if not droppedItems then
                             return
@@ -430,6 +433,12 @@ local ChestToggle = CheatTab:CreateToggle({
             _G.tchest = true
             while _G.tchest do
                 task.wait()
+                local player = game.Players.LocalPlayer
+                local character = player.Character or player.CharacterAdded:Wait()
+                local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+                if not character or not character:FindFirstChild("HumanoidRootPart") then
+                    return
+                end
                 task.spawn(function()
                     for _, ship in pairs(workspace:GetChildren()) do
                         if ship:IsA("Model") and ship:FindFirstChildOfClass("Model") then
