@@ -441,7 +441,7 @@ local selectchest = "Unknown"
 
 local Ramdomy = MainWindow:CreateTab("Chest")
 local Section = Ramdomy:CreateSection("Buy Chest")
-local Dropdown = TeleportTab:CreateDropdown({
+local Dropdown = Ramdomy:CreateDropdown({
     Name = "Teleport Method",
     Options = chests,
     CurrentOption = "Unknown",
@@ -453,7 +453,7 @@ local Dropdown = TeleportTab:CreateDropdown({
             selectchest = option
         end
         Rayfield:Notify({
-            Title = "Teleport Method",
+            Title = "Selected Chest",
             Content = selectchest,
             Duration = 6.5,
             Image = "alarm-clock",
@@ -461,7 +461,7 @@ local Dropdown = TeleportTab:CreateDropdown({
     end
 })
 
-local Button = TeleportTab:CreateButton({
+local Button = Ramdomy:CreateButton({
     Name = "Random Skin",
     Callback = function()
 
