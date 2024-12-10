@@ -233,7 +233,7 @@ local MobHuntToggle = CheatTab:CreateToggle({
                         end
                     end
                     if nearestMob then
-                        local freezePart = nearestMob:FindFirstChild("HumanoidRootPart") or nearestMob:FindFirstChild("Hitbox")
+                        local freezePart = nearestMob:FindFirstChild("Hitbox")
                         if freezePart then
                             freezePart.Anchored = true
                         end
