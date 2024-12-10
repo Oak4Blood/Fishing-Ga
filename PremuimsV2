@@ -288,7 +288,6 @@ local LootsToggle = CheatTab:CreateToggle({
                         local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
                         local droppedItems = game:GetService("Workspace"):FindFirstChild("DroppedItems")
                         if not droppedItems then
-                            warn("DroppedItems folder not found in Workspace!")
                             return
                         end
 
@@ -323,6 +322,39 @@ local LootsToggle = CheatTab:CreateToggle({
 
 local ChestsSection = CheatTab:CreateSection("Loot Chest")
 
+local LootChestMethod = {"Teleport", "Tween"}
+local DefaultLootChestMethod = "Teleport"
+local LootChestSpeed = {"50", "100", "150", "200"}
+local DefaultLootChestSpeed = "150"
+
+local LootMethodDropdown = CheatTab:CreateDropdown({
+    Name = "Loot Chest Method",
+    Options = LootChestMethod,
+    CurrentOption = DefaultLootChestMethod,
+    MultipleOptions = false,
+    Callback = function(option)
+        if type(option) == "table" then
+            DefaultLootChestMethod = option[1]
+        else
+            DefaultLootChestMethod = option
+        end
+    end
+})
+
+local LootMethodDropdown = CheatTab:CreateDropdown({
+    Name = "Loot Chest Tween Speed",
+    Options = LootChestSpeed,
+    CurrentOption = DefaultLootChestSpeed,
+    MultipleOptions = false,
+    Callback = function(option)
+        if type(option) == "table" then
+            DefaultLootChestSpeed = option[1]
+        else
+            DefaultLootChestSpeed = option
+        end
+    end
+})
+
 local ChestToggle = CheatTab:CreateToggle({
     Name = "Get All Chests",
     CurrentValue = false,
@@ -336,7 +368,19 @@ local ChestToggle = CheatTab:CreateToggle({
                         if v.ClassName == "ProximityPrompt" and v.Parent.Name == "HumanoidRootPart" and not v.Parent.Parent:GetAttribute("OpenParticlesType") and v.Enabled and v.ActionText == "Open" and _G.chest then
                             repeat
                                 task.wait()
-                                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Parent.CFrame
+                                if DefaultLootChestMethod == "Tween" then
+                                    local destination = v.Parent.CFrame
+                                    local tweenService = game:GetService("TweenService")
+                                    local distance = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - destination.Position).Magnitude
+                                    local speed = tonumber(DefaultLootChestSpeed) or 150
+                                    local duration = math.max(distance / speed, 0.1)
+                                    local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+                                    local tween = tweenService:Create(game.Players.LocalPlayer.Character.HumanoidRootPart, tweenInfo, {CFrame = destination})
+                                    tween:Play()
+                                    tween.Completed:Wait()
+                                elseif DefaultLootChestMethod == "Teleport" then
+                                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Parent.CFrame
+                                end
                                 fireproximityprompt(v)
                             until v.Enabled == false or _G.chest == false
                         end
@@ -371,10 +415,9 @@ local ChestToggle = CheatTab:CreateToggle({
                                         task.wait(0.5)
                                         pcall(function()
                                             proximityPrompt:InputHoldBegin()
-                                            task.wait(1)
+                                            task.wait(0.1)
                                             proximityPrompt:InputHoldEnd()
                                         end)
-                                        
                                         break
                                     end
                                 end
@@ -388,6 +431,7 @@ local ChestToggle = CheatTab:CreateToggle({
         end
     end,
 })
+
 
 local TweenService = game:GetService("TweenService")
  local TpMethods = {"Instant", "Tween"}
