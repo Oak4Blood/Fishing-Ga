@@ -265,7 +265,10 @@ local MobHuntToggle = CheatTab:CreateToggle({
                                     true
                                 )
                                 task.wait(2)
-                            until nearestMob.Health.Value == 0 or _G.MobHunt == false or nearestMob.Parent == nil or not nearestMob:FindFirstChild("Health")
+                            until nearestMob.Health.Value == 0 or _G.MobHunt == false or nearestMob.Parent == nil
+                        end
+                        if nearestMob.Health.Value == 0 then --FOR LATERRRRRRRRRRRRRR
+                            LootsToggle.Callback(true)
                         end
                     end)
                     while _G.IsLooting do
@@ -278,7 +281,6 @@ local MobHuntToggle = CheatTab:CreateToggle({
         end
     end
 })
-
 
 local LootsToggle = CheatTab:CreateToggle({
     Name = "Collect Loots",
@@ -320,9 +322,6 @@ local LootsToggle = CheatTab:CreateToggle({
                                     local player = game.Players.LocalPlayer
                                     local character = player.Character or player.CharacterAdded:Wait()
                                     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-                                    if not character or not character:FindFirstChild("HumanoidRootPart") then
-                                        return
-                                    end
                                     local droppedItems = game:GetService("Workspace"):FindFirstChild("DroppedItems")
                                     for _, loot in pairs(droppedItems:GetChildren()) do
                                         if loot:IsA("Model") and loot.PrimaryPart and loot.PrimaryPart.Transparency < 1 then
@@ -436,13 +435,10 @@ local ChestToggle = CheatTab:CreateToggle({
         if tchest then
             _G.tchest = true
             while _G.tchest do
-                task.wait()
-                local player = game.Players.LocalPlayer
-                local character = player.Character or player.CharacterAdded:Wait()
-                local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
                 if not character or not character:FindFirstChild("HumanoidRootPart") then
                     return
                 end
+                task.wait()
                 task.spawn(function()
                     for _, ship in pairs(workspace:GetChildren()) do
                         if ship:IsA("Model") and ship:FindFirstChildOfClass("Model") then
@@ -450,10 +446,28 @@ local ChestToggle = CheatTab:CreateToggle({
                                 if chest:IsA("Model") and chest:FindFirstChild("Gold") then
                                     local gold = chest:FindFirstChild("Gold")
                                     local proximityPrompt = chest:FindFirstChild("HumanoidRootPart"):FindFirstChild("ProximityPrompt")
-                                    if proximityPrompt then
-                                        proximityPrompt:InputHoldBegin()
-                                        wait(2)
-                                        proximityPrompt:InputHoldEnd()
+                                    if gold and gold:IsA("BasePart") and proximityPrompt then
+                                        if DefaultLootChestMethod == "Tween" then
+                                            local destination = gold.CFrame
+                                            local tweenService = game:GetService("TweenService")
+                                            local distance = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - destination.Position).Magnitude
+                                            local speed = tonumber(DefaultLootChestSpeed) or 150
+                                            local duration = math.max(distance / speed, 0.1)
+                                            local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+                                            local tween = tweenService:Create(game.Players.LocalPlayer.Character.HumanoidRootPart, tweenInfo, {CFrame = destination})
+                                            tween:Play()
+                                            tween.Completed:Wait()
+                                        elseif DefaultLootChestMethod == "Teleport" then
+                                            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = gold.CFrame
+                                        end
+                                        
+                                        task.wait(0.5)
+                                        pcall(function()
+                                            proximityPrompt:InputHoldBegin()
+                                            task.wait(1)
+                                            proximityPrompt:InputHoldEnd()
+                                        end)
+                                        break
                                     end
                                 end
                             end
@@ -464,7 +478,7 @@ local ChestToggle = CheatTab:CreateToggle({
         else
             _G.tchest = false
         end
-    end
+    end,
 })
 
 local TweenService = game:GetService("TweenService")
