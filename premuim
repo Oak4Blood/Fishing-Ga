@@ -239,13 +239,19 @@ local LootsToggle = CheatTab:CreateToggle({
                     local player = game.Players.LocalPlayer
                     local character = player.Character or player.CharacterAdded:Wait()
                     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-                    for _, loot in pairs(game:GetService("Workspace").DroppedItems:GetChildren()) do
-                        if loot:IsA("Model") and loot.PrimaryPart ~= nil and loot.PrimaryPart.Transparency ~= 1 then
+                    local droppedItems = game:GetService("Workspace"):FindFirstChild("DroppedItems")
+                    if not droppedItems then
+                        warn("DroppedItems folder not found in Workspace!")
+                        return
+                    end
+
+                    for _, loot in pairs(droppedItems:GetChildren()) do
+                        if loot:IsA("Model") and loot.PrimaryPart and loot.PrimaryPart.Transparency < 1 then
                             local destination = loot.PrimaryPart.CFrame
                             if DefaultLootMethod == "Tween" then
                                 local tweenService = game:GetService("TweenService")
                                 local distance = (humanoidRootPart.Position - destination.Position).Magnitude
-                                local duration = distance / (DefaultMobMoveSpeed or 150)
+                                local duration = distance / tonumber(DefaultMobMoveSpeed or 150)
                                 local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
                                 local tween = tweenService:Create(humanoidRootPart, tweenInfo, {CFrame = destination})
                                 tween:Play()
@@ -255,9 +261,7 @@ local LootsToggle = CheatTab:CreateToggle({
                             end
                             repeat
                                 task.wait()
-                            until not loot:IsDescendantOf(game:GetService("Workspace").DroppedItems) 
-                                or loot.PrimaryPart == nil 
-                                or not _G.Loots
+                            until not loot:IsDescendantOf(droppedItems) or not _G.Loots
                         end
                     end
                 end)
