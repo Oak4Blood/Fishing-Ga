@@ -244,12 +244,12 @@ local ChestToggle = CheatTab:CreateToggle({
 })
 
 local ChestToggle = CheatTab:CreateToggle({
-    Name = "Get Ship Treasuer",
+    Name = "Get Ship Treasure",
     CurrentValue = false,
     Callback = function(tchest)
         if tchest then
             _G.tchest = true
-            while _G.chest do
+            while _G.tchest do
                 pcall(function()
                     for _, ship in pairs(workspace:GetChildren()) do
                         if ship:IsA("Model") and ship:FindFirstChildOfClass("Model") then
@@ -260,7 +260,6 @@ local ChestToggle = CheatTab:CreateToggle({
                                     if gold and gold:IsA("BasePart") and proximityPrompt then
                                         pcall(function()
                                             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = gold.CFrame
-                                            print("Warped to Gold at:", gold:GetFullName())
                                         end)
                                         task.wait(0.5)
                                         pcall(function()
