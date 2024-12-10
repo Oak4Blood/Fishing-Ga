@@ -211,32 +211,46 @@ local MobHuntToggle = CheatTab:CreateToggle({
                     local player = game.Players.LocalPlayer
                     local character = player.Character or player.CharacterAdded:Wait()
                     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+                    local nearestMob, shortestDistance = nil, math.huge
                     for _, mob in pairs(workspace:GetChildren()) do
                         if mob:IsA("Model") and mob:FindFirstChild("Hitbox") and _G.MobHunt then
-                            local destination = mob.Hitbox.CFrame * CFrame.new(0, 0, 20)
-                            if DefaultMobMethod == "Tween" then
-                                local tweenService = game:GetService("TweenService")
-                                if not tweenService then
-                                    warn("TweenService not found!")
-                                    return
-                                end
-                                
-                                local distance = (humanoidRootPart.Position - destination.Position).Magnitude
-                                local speed = tonumber(DefaultMobMoveSpeed) or 150
-                                local duration = math.max(distance / speed, 0.1)
-                                local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-                                local tween = tweenService:Create(humanoidRootPart, tweenInfo, {CFrame = destination})
-                                
-                                tween:Play()
-                                tween.Completed:Wait()
-                            elseif DefaultMobMethod == "Teleport" then
-                                humanoidRootPart.CFrame = destination
+                            local distance = (humanoidRootPart.Position - mob.Hitbox.Position).Magnitude
+                            if distance < shortestDistance then
+                                nearestMob = mob
+                                shortestDistance = distance
                             end
-                            local spear = "DefaultSpearName"
-                            game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.SpearThrown:FireServer(spear, mob.Hitbox.CFrame, mob.Hitbox.Position, os.time() + math.random(100000, 999999))
-                            game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.MonsterHit:FireServer(mob, spear, true)
-                            task.wait(2)
                         end
+                    end
+                    if nearestMob then
+                        local destination = nearestMob.Hitbox.CFrame * CFrame.new(0, 20, 0)
+                        if DefaultMobMethod == "Tween" then
+                            local tweenService = game:GetService("TweenService")
+                            if not tweenService then
+                                return
+                            end
+                            local distance = (humanoidRootPart.Position - destination.Position).Magnitude
+                            local speed = tonumber(DefaultMobMoveSpeed) or 150
+                            local duration = math.max(distance / speed, 0.1)
+                            local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+                            local tween = tweenService:Create(humanoidRootPart, tweenInfo, {CFrame = destination})
+                            tween:Play()
+                            tween.Completed:Wait()
+                        elseif DefaultMobMethod == "Teleport" then
+                            humanoidRootPart.CFrame = destination
+                        end
+                        local spear = "DefaultSpearName"
+                        game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.SpearThrown:FireServer(
+                            spear,
+                            nearestMob.Hitbox.CFrame,
+                            nearestMob.Hitbox.Position,
+                            os.time() + math.random(100000, 999999)
+                        )
+                        game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.MonsterHit:FireServer(
+                            nearestMob,
+                            spear,
+                            true
+                        )
+                        task.wait(2)
                     end
                 end)
             end
@@ -245,6 +259,7 @@ local MobHuntToggle = CheatTab:CreateToggle({
         end
     end
 })
+
 
 
 local LootsToggle = CheatTab:CreateToggle({
