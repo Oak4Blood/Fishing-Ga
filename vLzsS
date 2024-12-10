@@ -436,7 +436,7 @@ game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.EnterDoor:Invo
     end
 })
 
-local chests = {"stonechest", "sliverchest", "goldchest"}
+local chests = {"stonechest", "silverchest", "goldchest"}
 local selectchest = "Unknown"
 
 local Ramdomy = MainWindow:CreateTab("Chest")
