@@ -250,6 +250,7 @@ local ChestToggle = CheatTab:CreateToggle({
         if tchest then
             _G.tchest = true
             while _G.tchest do
+                task.wait()
                 pcall(function()
                     for _, ship in pairs(workspace:GetChildren()) do
                         if ship:IsA("Model") and ship:FindFirstChildOfClass("Model") then
