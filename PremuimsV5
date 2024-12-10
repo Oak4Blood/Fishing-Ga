@@ -266,7 +266,7 @@ local MobHuntToggle = CheatTab:CreateToggle({
                         end
                     end)
 
-                    while _G.Loots do
+                    while _G.IsLooting do
                         task.wait()
                     end
                 end
@@ -283,11 +283,11 @@ local LootsToggle = CheatTab:CreateToggle({
     Callback = function(Loots)
         if Loots then
             _G.Loots = true
-            _G.isLooting = true
             task.spawn(function()
                 while _G.Loots do
                     task.wait()
                     pcall(function()
+                        _G.IsLooting = true
                         local player = game.Players.LocalPlayer
                         local character = player.Character or player.CharacterAdded:Wait()
                         local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -313,6 +313,7 @@ local LootsToggle = CheatTab:CreateToggle({
                                 repeat
                                     task.wait()
                                 until not loot:IsDescendantOf(droppedItems) or not _G.Loots
+                                _G.IsLooting = false
                             end
                         end
                     end)
@@ -320,7 +321,6 @@ local LootsToggle = CheatTab:CreateToggle({
             end)
         else
             _G.Loots = false
-            _G.isLooting = false
         end
     end
 })
