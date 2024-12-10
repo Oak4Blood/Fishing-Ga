@@ -312,9 +312,9 @@ local LootsToggle = CheatTab:CreateToggle({
                                     humanoidRootPart.CFrame = destination
                                 end
                                 repeat
-                                    task.wait()
+                                    task.wait(1)
                                     _G.IsLooting = true
-                                until not loot:IsDescendantOf(droppedItems) or not _G.Loots
+                                until not loot:IsDescendantOf(droppedItems) or not _G.Loots or loot.PrimaryPart.Transparency > 1
                                 _G.IsLooting = false
                             end
                         end
