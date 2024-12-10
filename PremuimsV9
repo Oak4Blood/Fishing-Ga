@@ -77,6 +77,34 @@ local AutoSellToggle = CheatTab:CreateToggle({
 
 local FishingSection = CheatTab:CreateSection("Fishing")
 local AutoFishToggle = CheatTab:CreateToggle({
+    Name = "Instant Fish Bite",
+    CurrentValue = false,
+    Callback = function(InFish)
+        if InFish then
+            _G.instantbite = true
+            while _G.instantbite do
+                task.wait()
+                local chr = game.Players.LocalPlayer.Character
+                local tool = chr:FindFirstChildOfClass("Tool")
+                if tool and tool:GetAttribute("type") == "Rods" then
+                    for _, v in pairs(tool:GetDescendants()) do
+                        if v.Name == "FakeBobber" and v:IsA("Instance") and v.Transparency == 1 then
+                            wait(1)
+                            game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.FishBiting:InvokeServer()
+                            repeat
+                                task.wait(1)
+                            until v.Transparency == 0 or not _G.instantbite
+                        end
+                    end
+                end
+            end
+        else
+            _G.instantbite = false
+        end
+    end
+})
+
+local AutoFishToggle = CheatTab:CreateToggle({
     Name = "Auto Fish",
     CurrentValue = false,
     Callback = function(AutoFish)
@@ -642,9 +670,9 @@ local selectchest = "Unknown"
 local Ramdomy = MainWindow:CreateTab("Chest")
 local Section = Ramdomy:CreateSection("Buy Chest")
 local Dropdown = Ramdomy:CreateDropdown({
-    Name = "Teleport Method",
+    Name = "Chest Selected",
     Options = chests,
-    CurrentOption = "Unknown",
+    CurrentOption = selectchest,
     MultipleOptions = false,
     Callback = function(option)
         if type(option) == "table" then
@@ -671,6 +699,45 @@ local args = {
 }
 
 game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.OpenLootboxFunction:InvokeServer(unpack(args))
+
+    end
+})
+
+local Section = Ramdomy:CreateSection("Buy Pet Egg")
+
+local petegg = {"normalegg", "royalegg", "rubyegg", "voidegg"}
+local selectpet = "Unknown"
+local Dropdown = Ramdomy:CreateDropdown({
+    Name = "Egg Selected",
+    Options = petegg,
+    CurrentOption = selectpet,
+    MultipleOptions = false,
+    Callback = function(option)
+        if type(option) == "table" then
+            selectpet = option[1]
+        else
+            selectpet = option
+        end
+        Rayfield:Notify({
+            Title = "Selected Chest",
+            Content = selectpet,
+            Duration = 6.5,
+            Image = "alarm-clock",
+        })
+    end
+})
+
+local Button = Ramdomy:CreateButton({
+    Name = "Random Pet",
+    Callback = function()
+
+local args = {
+    [1] = selectpet,
+    [2] = false
+}
+
+game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.OpenLootboxFunction:InvokeServer(unpack(args))
+
 
     end
 })
