@@ -265,6 +265,10 @@ local MobHuntToggle = CheatTab:CreateToggle({
                             until nearestMob.Health.Value == 0 or _G.MobHunt == false or nearestMob.Parent == nil
                         end
                     end)
+
+                    while _G.Loots do
+                        task.wait()
+                    end
                 end
             end)
         else
@@ -279,6 +283,7 @@ local LootsToggle = CheatTab:CreateToggle({
     Callback = function(Loots)
         if Loots then
             _G.Loots = true
+            _G.isLooting = true
             task.spawn(function()
                 while _G.Loots do
                     task.wait()
@@ -315,9 +320,11 @@ local LootsToggle = CheatTab:CreateToggle({
             end)
         else
             _G.Loots = false
+            _G.isLooting = false
         end
     end
 })
+
 
 
 local ChestsSection = CheatTab:CreateSection("Loot Chest")
