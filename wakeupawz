@@ -238,18 +238,8 @@ local MobHuntToggle = CheatTab:CreateToggle({
                         elseif DefaultMobMethod == "Teleport" then
                             humanoidRootPart.CFrame = destination
                         end
-                        local spear = "DefaultSpearName"
-                        game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.SpearThrown:FireServer(
-                            spear,
-                            nearestMob.Hitbox.CFrame,
-                            nearestMob.Hitbox.Position,
-                            os.time() + math.random(100000, 999999)
-                        )
-                        game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.MonsterHit:FireServer(
-                            nearestMob,
-                            spear,
-                            true
-                        )
+                        game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.SpearThrown:FireServer(spear, nearestMob.PrimaryPart.CFrame, v.PrimaryPart.Position, tonumber("1696341607.0" .. math.random(100000, 1000000)))
+                        game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.MonsterHit:FireServer(nearestMob, spear, true)
                         task.wait(2)
                     end
                 end)
