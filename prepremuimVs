@@ -224,17 +224,17 @@ local MobHuntToggle = CheatTab:CreateToggle({
                     end
                     local nearestMob, shortestDistance = nil, math.huge
                     for _, mob in pairs(workspace:GetChildren()) do
-                        if mob:IsA("Model") and (mob:FindFirstChild("HumanoidRootPart") or mob:FindFirstChild("Hitbox")) and _G.MobHunt then
-                            local distance = (humanoidRootPart.Position - mob.HumanoidRootPart.Position).Magnitude
+                        if mob:IsA("Model") and mob:FindFirstChild("Hitbox") and mob:FindFirstChild("Health") and _G.MobHunt then
+                            local distance = (humanoidRootPart.Position - mob.Hitbox.Position).Magnitude
                             if distance < shortestDistance then
                                 nearestMob = mob
                                 shortestDistance = distance
                             end
                         end
                     end
-                    if nearestMob then
+                    if nearestMob and nearestMob:FindFirstChild("Health") then
                         repeat
-                            local destination = nearestMob.HumanoidRootPart.CFrame * CFrame.new(0, 20, 0)
+                            local destination = nearestMob.Hitbox.CFrame * CFrame.new(0, 20, 0)
                             if DefaultMobMethod == "Tween" then
                                 local tweenService = game:GetService("TweenService")
                                 local distance = (humanoidRootPart.Position - destination.Position).Magnitude
@@ -249,8 +249,8 @@ local MobHuntToggle = CheatTab:CreateToggle({
                             end
                             game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.SpearThrown:FireServer(
                                 spear,
-                                nearestMob.HumanoidRootPart.CFrame,
-                                nearestMob.HumanoidRootPart.Position,
+                                nearestMob.Hitbox.CFrame,
+                                nearestMob.Hitbox.Position,
                                 os.time() + math.random(100000, 999999)
                             )
                             game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.MonsterHit:FireServer(
@@ -259,7 +259,7 @@ local MobHuntToggle = CheatTab:CreateToggle({
                                 true
                             )
                             task.wait(2)
-                        until nearestMob.HumanoidRootPart.Health == 0 or _G.MobHunt == false or nearestMob.Parent == nil
+                        until nearestMob.Health.Value == 0 or _G.MobHunt == false or nearestMob.Parent == nil
                     end
                 end)
             end
