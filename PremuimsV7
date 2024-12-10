@@ -264,6 +264,9 @@ local MobHuntToggle = CheatTab:CreateToggle({
                                 task.wait(2)
                             until nearestMob.Health.Value == 0 or _G.MobHunt == false or nearestMob.Parent == nil
                         end
+                        if nearestMob.Health.Value == 0 then
+                            LootsToggle.Callback(true)
+                        end
                     end)
                     while _G.IsLooting do
                         task.wait()
@@ -286,7 +289,6 @@ local LootsToggle = CheatTab:CreateToggle({
                 while _G.Loots do
                     task.wait()
                     pcall(function()
-                        _G.IsLooting = true
                         local player = game.Players.LocalPlayer
                         local character = player.Character or player.CharacterAdded:Wait()
                         local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -298,6 +300,7 @@ local LootsToggle = CheatTab:CreateToggle({
                         for _, loot in pairs(droppedItems:GetChildren()) do
                             if loot:IsA("Model") and loot.PrimaryPart and loot.PrimaryPart.Transparency < 1 then
                                 local destination = loot.PrimaryPart.CFrame
+                                _G.IsLooting = true
                                 if DefaultLootMethod == "Tween" then
                                     local tweenService = game:GetService("TweenService")
                                     local distance = (humanoidRootPart.Position - destination.Position).Magnitude
