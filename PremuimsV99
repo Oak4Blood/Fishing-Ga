@@ -296,7 +296,6 @@ local LootsToggle = CheatTab:CreateToggle({
                         if not droppedItems then
                             return
                         end
-
                         for _, loot in pairs(droppedItems:GetChildren()) do
                             if loot:IsA("Model") and loot.PrimaryPart and loot.PrimaryPart.Transparency < 1 then
                                 local destination = loot.PrimaryPart.CFrame
@@ -312,8 +311,19 @@ local LootsToggle = CheatTab:CreateToggle({
                                     humanoidRootPart.CFrame = destination
                                 end
                                 repeat
-                                    task.wait(1)
+                                    wait(1)
                                     _G.IsLooting = true
+                                    if DefaultLootMethod == "Tween" then
+                                        local tweenService = game:GetService("TweenService")
+                                        local distance = (humanoidRootPart.Position - destination.Position).Magnitude
+                                        local duration = distance / tonumber(DefaultMobMoveSpeed or 150)
+                                        local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+                                        local tween = tweenService:Create(humanoidRootPart, tweenInfo, {CFrame = destination})
+                                        tween:Play()
+                                        tween.Completed:Wait()
+                                    elseif DefaultLootMethod == "Teleport" then
+                                        humanoidRootPart.CFrame = destination
+                                    end
                                 until not loot:IsDescendantOf(droppedItems) or not _G.Loots or loot.PrimaryPart.Transparency > 1
                                 _G.IsLooting = false
                             end
