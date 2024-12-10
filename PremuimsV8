@@ -300,7 +300,6 @@ local LootsToggle = CheatTab:CreateToggle({
                         for _, loot in pairs(droppedItems:GetChildren()) do
                             if loot:IsA("Model") and loot.PrimaryPart and loot.PrimaryPart.Transparency < 1 then
                                 local destination = loot.PrimaryPart.CFrame
-                                _G.IsLooting = true
                                 if DefaultLootMethod == "Tween" then
                                     local tweenService = game:GetService("TweenService")
                                     local distance = (humanoidRootPart.Position - destination.Position).Magnitude
@@ -314,6 +313,7 @@ local LootsToggle = CheatTab:CreateToggle({
                                 end
                                 repeat
                                     task.wait()
+                                    _G.IsLooting = true
                                 until not loot:IsDescendantOf(droppedItems) or not _G.Loots
                                 _G.IsLooting = false
                             end
