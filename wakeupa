@@ -127,7 +127,11 @@ local MobMethodDropdown = CheatTab:CreateDropdown({
     CurrentOption = DefaultMobMethod,
     MultipleOptions = false,
     Callback = function(option)
-        DefaultMobMethod = option
+        if type(option) == "table" then
+            DefaultMobMethod = option[1]
+        else
+            DefaultMobMethod = option
+        end
     end
 })
 
@@ -137,7 +141,11 @@ local MobSpeedDropdown = CheatTab:CreateDropdown({
     CurrentOption = DefaultMobMoveSpeed,
     MultipleOptions = false,
     Callback = function(option)
-        DefaultMobMoveSpeed = option
+        if type(option) == "table" then
+            DefaultMobMoveSpeed = option[1]
+        else
+            DefaultMobMoveSpeed = option
+        end
     end
 })
 
@@ -147,7 +155,11 @@ local LootMethodDropdown = CheatTab:CreateDropdown({
     CurrentOption = DefaultLootMethod,
     MultipleOptions = false,
     Callback = function(option)
-        DefaultLootMethod = option
+        if type(option) == "table" then
+            DefaultLootMethod = option[1]
+        else
+            DefaultLootMethod = option
+        end
     end
 })
 
@@ -196,30 +208,33 @@ local MobHuntToggle = CheatTab:CreateToggle({
             while _G.MobHunt do
                 task.wait()
                 pcall(function()
-                    local plr = game.Players.LocalPlayer.UserId
-                    for i, v in pairs(game:GetService("ReplicatedStorage").ToolsCache[plr]:GetChildren()) do
-                        if v:GetAttribute("type") == "Spears" then
-                            spear = v.Name
-                        end
-                    end
-                    for _, v in pairs(game:GetDescendants()) do
-                        if v.Name == "Hitbox" and v:IsA("BasePart") then
-                            v.Anchored = true
-                        end
-                    end
-                    for i, v in pairs(workspace:GetChildren()) do
-                        if v.ClassName == "Model" and v:FindFirstChild("Hitbox") and _G.MobHunt then
+                    local player = game.Players.LocalPlayer
+                    local character = player.Character or player.CharacterAdded:Wait()
+                    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+                    for _, mob in pairs(workspace:GetChildren()) do
+                        if mob:IsA("Model") and mob:FindFirstChild("Hitbox") and _G.MobHunt then
+                            local destination = mob.Hitbox.CFrame * CFrame.new(0, 0, 20)
                             if DefaultMobMethod == "Tween" then
                                 local tweenService = game:GetService("TweenService")
-                                local tweenInfo = TweenInfo.new(tonumber(DefaultMobMoveSpeed) / 100)
-                                local tween = tweenService:Create(game.Players.LocalPlayer.Character.HumanoidRootPart, tweenInfo, {CFrame = v.PrimaryPart.CFrame * CFrame.new(0, 0, 20)})
+                                if not tweenService then
+                                    warn("TweenService not found!")
+                                    return
+                                end
+                                
+                                local distance = (humanoidRootPart.Position - destination.Position).Magnitude
+                                local speed = tonumber(DefaultMobMoveSpeed) or 150
+                                local duration = math.max(distance / speed, 0.1)
+                                local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+                                local tween = tweenService:Create(humanoidRootPart, tweenInfo, {CFrame = destination})
+                                
                                 tween:Play()
                                 tween.Completed:Wait()
                             elseif DefaultMobMethod == "Teleport" then
-                                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.PrimaryPart.CFrame * CFrame.new(0, 0, 20)
+                                humanoidRootPart.CFrame = destination
                             end
-                            game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.SpearThrown:FireServer(spear, v.PrimaryPart.CFrame, v.PrimaryPart.Position, tonumber("1696341607.0" .. math.random(100000, 1000000)))
-                            game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.MonsterHit:FireServer(v, spear, true)
+                            local spear = "DefaultSpearName"
+                            game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.SpearThrown:FireServer(spear, mob.Hitbox.CFrame, mob.Hitbox.Position, os.time() + math.random(100000, 999999))
+                            game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.MonsterHit:FireServer(mob, spear, true)
                             task.wait(2)
                         end
                     end
@@ -228,8 +243,9 @@ local MobHuntToggle = CheatTab:CreateToggle({
         else
             _G.MobHunt = false
         end
-    end,
+    end
 })
+
 
 local LootsToggle = CheatTab:CreateToggle({
     Name = "Collect Loots",
@@ -240,20 +256,32 @@ local LootsToggle = CheatTab:CreateToggle({
             while _G.Loots do
                 task.wait()
                 pcall(function()
-                    for i, v in pairs(game:GetService("Workspace").DroppedItems:GetChildren()) do
-                        if v:IsA("Model") and v.PrimaryPart ~= nil and v.PrimaryPart.Transparency ~= 1 then
+                    local player = game.Players.LocalPlayer
+                    local character = player.Character or player.CharacterAdded:Wait()
+                    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+                    local droppedItems = game:GetService("Workspace"):FindFirstChild("DroppedItems")
+                    if not droppedItems then
+                        warn("DroppedItems folder not found in Workspace!")
+                        return
+                    end
+
+                    for _, loot in pairs(droppedItems:GetChildren()) do
+                        if loot:IsA("Model") and loot.PrimaryPart and loot.PrimaryPart.Transparency < 1 then
+                            local destination = loot.PrimaryPart.CFrame
                             if DefaultLootMethod == "Tween" then
                                 local tweenService = game:GetService("TweenService")
-                                local tweenInfo = TweenInfo.new(0.5)
-                                local tween = tweenService:Create(game.Players.LocalPlayer.Character.HumanoidRootPart, tweenInfo, {CFrame = v.PrimaryPart.CFrame})
+                                local distance = (humanoidRootPart.Position - destination.Position).Magnitude
+                                local duration = distance / tonumber(DefaultMobMoveSpeed or 150)
+                                local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+                                local tween = tweenService:Create(humanoidRootPart, tweenInfo, {CFrame = destination})
                                 tween:Play()
                                 tween.Completed:Wait()
                             elseif DefaultLootMethod == "Teleport" then
-                                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.PrimaryPart.CFrame
+                                humanoidRootPart.CFrame = destination
                             end
                             repeat
                                 task.wait()
-                            until not v:IsDescendantOf(game:GetService("Workspace").DroppedItems) or v.PrimaryPart == nil or not _G.Loots
+                            until not loot:IsDescendantOf(droppedItems) or not _G.Loots
                         end
                     end
                 end)
@@ -263,6 +291,7 @@ local LootsToggle = CheatTab:CreateToggle({
         end
     end
 })
+
 
 local ChestsSection = CheatTab:CreateSection("Loot Chest")
 
