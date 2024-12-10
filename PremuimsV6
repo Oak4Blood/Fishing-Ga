@@ -265,7 +265,6 @@ local MobHuntToggle = CheatTab:CreateToggle({
                             until nearestMob.Health.Value == 0 or _G.MobHunt == false or nearestMob.Parent == nil
                         end
                     end)
-
                     while _G.IsLooting do
                         task.wait()
                     end
@@ -324,6 +323,7 @@ local LootsToggle = CheatTab:CreateToggle({
         end
     end
 })
+
 
 
 
