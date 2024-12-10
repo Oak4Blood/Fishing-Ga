@@ -319,6 +319,9 @@ local LootsToggle = CheatTab:CreateToggle({
                                     local player = game.Players.LocalPlayer
                                     local character = player.Character or player.CharacterAdded:Wait()
                                     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+                                    if not character or not character:FindFirstChild("HumanoidRootPart") then
+                                        return
+                                    end
                                     local droppedItems = game:GetService("Workspace"):FindFirstChild("DroppedItems")
                                     for _, loot in pairs(droppedItems:GetChildren()) do
                                         if loot:IsA("Model") and loot.PrimaryPart and loot.PrimaryPart.Transparency < 1 then
