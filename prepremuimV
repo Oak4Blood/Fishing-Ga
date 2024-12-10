@@ -233,10 +233,6 @@ local MobHuntToggle = CheatTab:CreateToggle({
                         end
                     end
                     if nearestMob then
-                        local freezePart = nearestMob:FindFirstChild("Hitbox")
-                        if freezePart then
-                            freezePart.Anchored = true
-                        end
                         repeat
                             local destination = nearestMob.HumanoidRootPart.CFrame * CFrame.new(0, 20, 0)
                             if DefaultMobMethod == "Tween" then
