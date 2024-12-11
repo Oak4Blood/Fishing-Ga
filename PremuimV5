@@ -239,10 +239,14 @@ local MobHuntToggle = CheatTab:CreateToggle({
                     pcall(function()
                         local player = game.Players.LocalPlayer
                         local character = player.Character or player.CharacterAdded:Wait()
-                        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-                        if not character or not character:FindFirstChild("HumanoidRootPart") then
-                            return
+                        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                        
+                        while not humanoidRootPart do
+                            task.wait()
+                            character = player.Character or player.CharacterAdded:Wait()
+                            humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
                         end
+
                         local spear = nil
                         for _, tool in pairs(game:GetService("ReplicatedStorage").ToolsCache[player.UserId]:GetChildren()) do
                             if tool:GetAttribute("type") == "Spears" then
@@ -296,9 +300,6 @@ local MobHuntToggle = CheatTab:CreateToggle({
                             until nearestMob.Health.Value == 0 or _G.MobHunt == false or nearestMob.Parent == nil
                         end
                     end)
-                    while _G.IsLooting do
-                        task.wait()
-                    end
                 end
             end)
         else
@@ -320,13 +321,18 @@ local LootsToggle = CheatTab:CreateToggle({
                         local player = game.Players.LocalPlayer
                         local character = player.Character or player.CharacterAdded:Wait()
                         local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-                        if not character or not character:FindFirstChild("HumanoidRootPart") then
-                            return
+
+                        while not character.Parent or character:WaitForChild("Humanoid").Health == 0 do
+                            task.wait()
+                            character = player.Character or player.CharacterAdded:Wait()
+                            humanoidRootPart = character:WaitForChild("HumanoidRootPart")
                         end
+
                         local droppedItems = game:GetService("Workspace"):FindFirstChild("DroppedItems")
                         if not droppedItems then
                             return
                         end
+
                         for _, loot in pairs(droppedItems:GetChildren()) do
                             if loot:IsA("Model") and loot.PrimaryPart and loot.PrimaryPart.Transparency < 1 then
                                 local destination = loot.PrimaryPart.CFrame
@@ -342,29 +348,12 @@ local LootsToggle = CheatTab:CreateToggle({
                                     humanoidRootPart.CFrame = destination
                                 end
                                 repeat
-                                    wait(1)
+                                    task.wait(1)
                                     _G.IsLooting = true
-                                    local player = game.Players.LocalPlayer
-                                    local character = player.Character or player.CharacterAdded:Wait()
-                                    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-                                    local droppedItems = game:GetService("Workspace"):FindFirstChild("DroppedItems")
-                                    for _, loot in pairs(droppedItems:GetChildren()) do
-                                        if loot:IsA("Model") and loot.PrimaryPart and loot.PrimaryPart.Transparency < 1 then
-                                            local destination = loot.PrimaryPart.CFrame
-                                    if _G.DefaultLootMethod == "Tween" then
-                                        local tweenService = game:GetService("TweenService")
-                                        local distance = (humanoidRootPart.Position - destination.Position).Magnitude
-                                        local duration = distance / tonumber(DefaultMobMoveSpeed or 150)
-                                        local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-                                        local tween = tweenService:Create(humanoidRootPart, tweenInfo, {CFrame = destination})
-                                        tween:Play()
-                                        tween.Completed:Wait()
-                                    elseif _G.DefaultLootMethod == "Teleport" then
-                                        humanoidRootPart.CFrame = destination
+                                    if not loot:IsDescendantOf(droppedItems) or not _G.Loots or loot.PrimaryPart.Transparency > 1 then
+                                        break
                                     end
-                                end
-                            end
-                                until not loot:IsDescendantOf(droppedItems) or not _G.Loots or loot.PrimaryPart.Transparency > 1
+                                until not loot:IsDescendantOf(droppedItems) or loot.PrimaryPart.Transparency > 1
                                 _G.IsLooting = false
                             end
                         end
@@ -376,8 +365,6 @@ local LootsToggle = CheatTab:CreateToggle({
         end
     end
 })
-
-
 
 
 local ChestsSection = CheatTab:CreateSection("Loot Chest")
@@ -464,9 +451,10 @@ local ChestToggle = CheatTab:CreateToggle({
                     local player = game.Players.LocalPlayer
                     local character = player.Character or player.CharacterAdded:Wait()
                     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-                    if not humanoidRootPart then
-                        task.wait(1)
-                        return
+                    while not humanoidRootPart do
+                        task.wait()
+                        character = player.Character or player.CharacterAdded:Wait()
+                        humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
                     end
                     for _, ship in pairs(workspace:GetChildren()) do
                         if ship:IsA("Model") and ship:FindFirstChildOfClass("Model") then
