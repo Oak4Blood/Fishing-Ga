@@ -7,7 +7,7 @@ end)
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local MainWindow = Rayfield:CreateWindow({
-    Name = "Celestialrune Enchanted",
+    Name = "Celestialrune Hub",
     Icon = 0,
     LoadingTitle = "Loading...",
     LoadingSubtitle = "Script By null_cmd_",
@@ -24,7 +24,7 @@ local MainWindow = Rayfield:CreateWindow({
        Invite = "noinvitelink",
        RememberJoins = true
     },
-    KeySystem = false,
+    KeySystem = true,
     KeySettings = {
        Title = "Key?",
        Subtitle = "Key on Discord Server",
@@ -32,7 +32,7 @@ local MainWindow = Rayfield:CreateWindow({
        FileName = "Key",
        SaveKey = true,
        GrabKeyFromSite = false,
-       Key = {"What da hell"}
+       Key = {"FreeTrait"}
     }
 })
 
@@ -42,7 +42,7 @@ local CreditButton = MainTab:CreateButton({
     Callback = function()
         print("test successful")
         Rayfield:Notify({
-            Title = "Notification Title",
+            Title = "Credit",
             Content = "Contact null_cmd_ on discord",
             Duration = 6.5,
             Image = 4483362458,
@@ -541,7 +541,7 @@ local TweenService = game:GetService("TweenService")
          else
              DefaultLocation = option
          end
-         DefaultLocationPosition = LocationPositions[DefaultLocation] or CFrame.new()  -- อัพเดตตำแหน่งของ CFrame ตามที่เลือก
+         DefaultLocationPosition = LocationPositions[DefaultLocation] or CFrame.new() 
          print("Selected Location: ", DefaultLocation)
          Rayfield:Notify({
              Title = "Location Selected",
@@ -667,7 +667,7 @@ game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.EnterDoor:Invo
 local chests = {"stonechest", "silverchest", "goldchest", "timberchest", "crownchest", "elvenchest"}
 local selectchest = "Unknown"
 
-local Ramdomy = MainWindow:CreateTab("Chest")
+local Ramdomy = MainWindow:CreateTab("Gacha")
 local Section = Ramdomy:CreateSection("Buy Chest")
 local Dropdown = Ramdomy:CreateDropdown({
     Name = "Chest Selected",
