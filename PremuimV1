@@ -239,12 +239,24 @@ local MobHuntToggle = CheatTab:CreateToggle({
                     pcall(function()
                         local player = game.Players.LocalPlayer
                         local character = player.Character or player.CharacterAdded:Wait()
-                        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
                         
-                        while not humanoidRootPart do
-                            task.wait()
-                            character = player.Character or player.CharacterAdded:Wait()
-                            humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                        if not character or not character:FindFirstChild("HumanoidRootPart") then
+                            repeat
+                                task.wait()
+                                character = player.Character or player.CharacterAdded:Wait()
+                            until character and character:FindFirstChild("HumanoidRootPart")
+                        end
+
+                        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                        local humanoid = character:FindFirstChild("Humanoid")
+
+                        if humanoid and humanoid.Health <= 0 then
+                            repeat
+                                task.wait()
+                                character = player.Character or player.CharacterAdded:Wait()
+                                humanoid = character:FindFirstChild("Humanoid")
+                            until humanoid and humanoid.Health > 0
+                            humanoidRootPart = character:WaitForChild("HumanoidRootPart")
                         end
 
                         local spear = nil
@@ -320,11 +332,23 @@ local LootsToggle = CheatTab:CreateToggle({
                     pcall(function()
                         local player = game.Players.LocalPlayer
                         local character = player.Character or player.CharacterAdded:Wait()
-                        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+                        
+                        if not character or not character:FindFirstChild("HumanoidRootPart") then
+                            repeat
+                                task.wait()
+                                character = player.Character or player.CharacterAdded:Wait()
+                            until character and character:FindFirstChild("HumanoidRootPart")
+                        end
 
-                        while not character.Parent or character:WaitForChild("Humanoid").Health == 0 do
-                            task.wait()
-                            character = player.Character or player.CharacterAdded:Wait()
+                        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                        local humanoid = character:FindFirstChild("Humanoid")
+
+                        if humanoid and humanoid.Health <= 0 then
+                            repeat
+                                task.wait()
+                                character = player.Character or player.CharacterAdded:Wait()
+                                humanoid = character:FindFirstChild("Humanoid")
+                            until humanoid and humanoid.Health > 0
                             humanoidRootPart = character:WaitForChild("HumanoidRootPart")
                         end
 
