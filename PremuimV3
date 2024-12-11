@@ -7,7 +7,7 @@ end)
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local MainWindow = Rayfield:CreateWindow({
-    Name = "Celestialrune Hub",
+    Name = "Celestialrune Enchanted",
     Icon = 0,
     LoadingTitle = "Loading...",
     LoadingSubtitle = "Script By null_cmd_",
@@ -24,7 +24,7 @@ local MainWindow = Rayfield:CreateWindow({
        Invite = "noinvitelink",
        RememberJoins = true
     },
-    KeySystem = true,
+    KeySystem = false,
     KeySettings = {
        Title = "Key?",
        Subtitle = "Key on Discord Server",
@@ -42,7 +42,7 @@ local CreditButton = MainTab:CreateButton({
     Callback = function()
         print("test successful")
         Rayfield:Notify({
-            Title = "Credit",
+            Title = "Script Creator",
             Content = "Contact null_cmd_ on discord",
             Duration = 6.5,
             Image = 4483362458,
@@ -382,10 +382,10 @@ local LootsToggle = CheatTab:CreateToggle({
 
 local ChestsSection = CheatTab:CreateSection("Loot Chest")
 
-local _G.LootChestMethod = {"Teleport", "Tween"}
-local _G.DefaultLootChestMethod = "Teleport"
-local _G.LootChestSpeed = {"50", "100", "150", "200"}
-local _G.DefaultLootChestSpeed = "150"
+_G.LootChestMethod = {"Teleport", "Tween"}
+_G.DefaultLootChestMethod = "Teleport"
+_G.LootChestSpeed = {"50", "100", "150", "200"}
+_G.DefaultLootChestSpeed = "150"
 
 local LootMethodDropdown = CheatTab:CreateDropdown({
     Name = "Loot Chest Method",
@@ -512,14 +512,14 @@ local ChestToggle = CheatTab:CreateToggle({
 
 
 local TweenService = game:GetService("TweenService")
- local _G.TpMethods = {"Instant", "Tween"}
- local _G.DefaultTp = "Unknown"
- local _G.Location = {
+_G.TpMethods = {"Instant", "Tween"}
+_G.DefaultTp = "Unknown"
+_G.Location = {
      "Port Jackson", "Eruption Island", "Shadow Isles", "Ancient Shores", "Pharaoh's Dunes", "Monster's Borough 1", "Monster's Borough 2", "Monster's Borough 3"
  }
- local _G.DefaultLocation = "Unknown"
- local _G.TweenSpeed = 100
- local _G.LocationPositions = {
+ local DefaultLocation = "Unknown"
+ local TweenSpeed = 100
+ local LocationPositions = {
      ["Port Jackson"] = CFrame.new(-3, 55, -125),
      ["Eruption Island"] = CFrame.new(3023, 52, 1323),
      ["Shadow Isles"] = CFrame.new(2197, 43, -2216),
@@ -532,20 +532,20 @@ local TweenService = game:GetService("TweenService")
  local TeleportTab = MainWindow:CreateTab("Teleport")
  local Dropdown = TeleportTab:CreateDropdown({
      Name = "Location",
-     Options = _G.Location,
+     Options = Location,
      CurrentOption = "Unknown",
      MultipleOptions = false,
      Callback = function(option)
          if type(option) == "table" then
-             _G.DefaultLocation = option[1]
+             DefaultLocation = option[1]
          else
-             _G.DefaultLocation = option
+             DefaultLocation = option
          end
-         DefaultLocationPosition = LocationPositions[_G.DefaultLocation] or CFrame.new() 
-         print("Selected Location: ", _G.DefaultLocation)
+         DefaultLocationPosition = LocationPositions[DefaultLocation] or CFrame.new()  -- อัพเดตตำแหน่งของ CFrame ตามที่เลือก
+         print("Selected Location: ", DefaultLocation)
          Rayfield:Notify({
              Title = "Location Selected",
-             Content = "You have selected: " .. _G.DefaultLocation,
+             Content = "You have selected: " .. DefaultLocation,
              Duration = 6.5,
              Image = "location-pin",
          })
@@ -555,19 +555,19 @@ local TweenService = game:GetService("TweenService")
  
  local Dropdown = TeleportTab:CreateDropdown({
      Name = "Teleport Method",
-     Options = _G.TpMethods,
-     CurrentOption = _G.DefaultTp,
+     Options = TpMethods,
+     CurrentOption = "Unknown",
      MultipleOptions = false,
      Callback = function(option)
          if type(option) == "table" then
-             _G.DefaultTp = option[1]
+             DefaultTp = option[1]
          else
-             _G.DefaultTp = option
+             DefaultTp = option
          end
-         print("Selected Teleport Method: ", _G.DefaultTp)
+         print("Selected Teleport Method: ", DefaultTp)
          Rayfield:Notify({
              Title = "Teleport Method",
-             Content = _G.DefaultTp,
+             Content = DefaultTp,
              Duration = 6.5,
              Image = "alarm-clock",
          })
@@ -583,9 +583,9 @@ local TweenService = game:GetService("TweenService")
      Flag = "Slider1",
      Callback = function(Value)
          if type(Value) == "table" then
-             _G.TweenSpeed = Value[1]
+             TweenSpeed = Value[1]
          else
-             _G.TweenSpeed = Value
+             TweenSpeed = Value
          end
      end,
  })
@@ -593,15 +593,15 @@ local TweenService = game:GetService("TweenService")
 local Button = TeleportTab:CreateButton({
     Name = "Press to Teleport",
     Callback = function()
-        if _G.DefaultTp == "Instant" then
+        if DefaultTp == "Instant" then
             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = DefaultLocationPosition
-        elseif _G.DefaultTp == "Tween" then
+        elseif DefaultTp == "Tween" then
             local destination = DefaultLocationPosition
             local character = game.Players.LocalPlayer.Character
             local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
             if humanoidRootPart and character:FindFirstChild("Humanoid") then
                 local distance = (humanoidRootPart.Position - destination.Position).Magnitude
-                local duration = distance / _G.TweenSpeed
+                local duration = distance / TweenSpeed
                 local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
                 local tween = TweenService:Create(humanoidRootPart, tweenInfo, {CFrame = destination})
                 tween:Play()
@@ -667,7 +667,7 @@ game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.EnterDoor:Invo
 local chests = {"stonechest", "silverchest", "goldchest", "timberchest", "crownchest", "elvenchest"}
 local selectchest = "Unknown"
 
-local Ramdomy = MainWindow:CreateTab("Gacha")
+local Ramdomy = MainWindow:CreateTab("Chest")
 local Section = Ramdomy:CreateSection("Buy Chest")
 local Dropdown = Ramdomy:CreateDropdown({
     Name = "Chest Selected",
