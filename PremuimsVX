@@ -7,7 +7,7 @@ end)
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local MainWindow = Rayfield:CreateWindow({
-    Name = "Celestialrune Hub",
+    Name = "Celestialrune Enchanted",
     Icon = 0,
     LoadingTitle = "Loading...",
     LoadingSubtitle = "Script By null_cmd_",
@@ -24,7 +24,7 @@ local MainWindow = Rayfield:CreateWindow({
        Invite = "noinvitelink",
        RememberJoins = true
     },
-    KeySystem = true,
+    KeySystem = false,
     KeySettings = {
        Title = "Key?",
        Subtitle = "Key on Discord Server",
@@ -42,7 +42,7 @@ local CreditButton = MainTab:CreateButton({
     Callback = function()
         print("test successful")
         Rayfield:Notify({
-            Title = "Credit",
+            Title = "Script Creator",
             Content = "Contact null_cmd_ on discord",
             Duration = 6.5,
             Image = 4483362458,
@@ -142,51 +142,51 @@ local AutoFishToggle = CheatTab:CreateToggle({
 
 local MobsSection = CheatTab:CreateSection("Mobs")
 
-MobMethod = {"Tween", "Teleport"}
-DefaultMobMethod = "Teleport"
-MobMoveSpeed = {"50", "100", "150", "200"}
-DefaultMobMoveSpeed = "150"
-LootMethod = {"Tween", "Teleport"}
-DefaultLootMethod = "Teleport"
+_G.MobMethod = {"Tween", "Teleport"}
+_G.DefaultMobMethod = "Teleport"
+_G.MobMoveSpeed = {"50", "100", "150", "200"}
+_G.DefaultMobMoveSpeed = "150"
+_G.LootMethod = {"Tween", "Teleport"}
+_G.DefaultLootMethod = "Teleport"
 
 local MobMethodDropdown = CheatTab:CreateDropdown({
     Name = "Mob Farm Method",
-    Options = MobMethod,
-    CurrentOption = DefaultMobMethod,
+    Options = _G.MobMethod,
+    CurrentOption = _G.DefaultMobMethod,
     MultipleOptions = false,
     Callback = function(option)
         if type(option) == "table" then
-            DefaultMobMethod = option[1]
+            _G.DefaultMobMethod = option[1]
         else
-            DefaultMobMethod = option
+            _G.DefaultMobMethod = option
         end
     end
 })
 
 local MobSpeedDropdown = CheatTab:CreateDropdown({
     Name = "Mob Move Speed",
-    Options = MobMoveSpeed,
-    CurrentOption = DefaultMobMoveSpeed,
+    Options = _G.MobMoveSpeed,
+    CurrentOption = _G.DefaultMobMoveSpeed,
     MultipleOptions = false,
     Callback = function(option)
         if type(option) == "table" then
-            DefaultMobMoveSpeed = option[1]
+            _G.DefaultMobMoveSpeed = option[1]
         else
-            DefaultMobMoveSpeed = option
+            _G.DefaultMobMoveSpeed = option
         end
     end
 })
 
 local LootMethodDropdown = CheatTab:CreateDropdown({
     Name = "Loot Collect Method",
-    Options = LootMethod,
-    CurrentOption = DefaultLootMethod,
+    Options = _G.LootMethod,
+    CurrentOption = _G.DefaultLootMethod,
     MultipleOptions = false,
     Callback = function(option)
         if type(option) == "table" then
-            DefaultLootMethod = option[1]
+            _G.DefaultLootMethod = option[1]
         else
-            DefaultLootMethod = option
+            _G.DefaultLootMethod = option
         end
     end
 })
@@ -237,8 +237,16 @@ local MobHuntToggle = CheatTab:CreateToggle({
                 while _G.MobHunt do
                     task.wait()
                     pcall(function()
+                        local player1 = game.Players.LocalPlayer
+    local character1 = player1.Character or player1.CharacterAdded:Wait()
+    local function onCharacterRespawn()
+    character1 = player1.Character or player1.CharacterAdded:Wait()
+end
+player1.CharacterAdded:Connect(onCharacterRespawn)
+
                         local player = game.Players.LocalPlayer
                         local character = player.Character or player.CharacterAdded:Wait()
+                        
                         local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
                         if not character or not character:FindFirstChild("HumanoidRootPart") then
                             return
@@ -268,8 +276,15 @@ local MobHuntToggle = CheatTab:CreateToggle({
 
                         if nearestMob and nearestMob:FindFirstChild("Health") then
                             repeat
+                                local player1 = game.Players.LocalPlayer
+                                local character1 = player1.Character or player1.CharacterAdded:Wait()
+                                local function onCharacterRespawn()
+                                character1 = player1.Character or player1.CharacterAdded:Wait()
+                            end
+                            player1.CharacterAdded:Connect(onCharacterRespawn)
+                            
                                 local destination = nearestMob.Hitbox.CFrame * CFrame.new(0, 20, 0)
-                                if DefaultMobMethod == "Tween" then
+                                if _G.DefaultMobMethod == "Tween" then
                                     local tweenService = game:GetService("TweenService")
                                     local distance = (humanoidRootPart.Position - destination.Position).Magnitude
                                     local speed = tonumber(DefaultMobMoveSpeed) or 150
@@ -278,7 +293,7 @@ local MobHuntToggle = CheatTab:CreateToggle({
                                     local tween = tweenService:Create(humanoidRootPart, tweenInfo, {CFrame = destination})
                                     tween:Play()
                                     tween.Completed:Wait()
-                                elseif DefaultMobMethod == "Teleport" then
+                                elseif _G.DefaultMobMethod == "Teleport" then
                                     humanoidRootPart.CFrame = destination
                                 end
                                 game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.SpearThrown:FireServer(
@@ -317,6 +332,13 @@ local LootsToggle = CheatTab:CreateToggle({
                 while _G.Loots do
                     task.wait()
                     pcall(function()
+                        local player1 = game.Players.LocalPlayer
+                        local character1 = player1.Character or player1.CharacterAdded:Wait()
+                        local function onCharacterRespawn()
+                        character1 = player1.Character or player1.CharacterAdded:Wait()
+                    end
+                    player1.CharacterAdded:Connect(onCharacterRespawn)
+                    
                         local player = game.Players.LocalPlayer
                         local character = player.Character or player.CharacterAdded:Wait()
                         local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -330,7 +352,7 @@ local LootsToggle = CheatTab:CreateToggle({
                         for _, loot in pairs(droppedItems:GetChildren()) do
                             if loot:IsA("Model") and loot.PrimaryPart and loot.PrimaryPart.Transparency < 1 then
                                 local destination = loot.PrimaryPart.CFrame
-                                if DefaultLootMethod == "Tween" then
+                                if _G.DefaultLootMethod == "Tween" then
                                     local tweenService = game:GetService("TweenService")
                                     local distance = (humanoidRootPart.Position - destination.Position).Magnitude
                                     local duration = distance / tonumber(DefaultMobMoveSpeed or 150)
@@ -338,7 +360,7 @@ local LootsToggle = CheatTab:CreateToggle({
                                     local tween = tweenService:Create(humanoidRootPart, tweenInfo, {CFrame = destination})
                                     tween:Play()
                                     tween.Completed:Wait()
-                                elseif DefaultLootMethod == "Teleport" then
+                                elseif _G.DefaultLootMethod == "Teleport" then
                                     humanoidRootPart.CFrame = destination
                                 end
                                 repeat
@@ -351,7 +373,7 @@ local LootsToggle = CheatTab:CreateToggle({
                                     for _, loot in pairs(droppedItems:GetChildren()) do
                                         if loot:IsA("Model") and loot.PrimaryPart and loot.PrimaryPart.Transparency < 1 then
                                             local destination = loot.PrimaryPart.CFrame
-                                    if DefaultLootMethod == "Tween" then
+                                    if _G.DefaultLootMethod == "Tween" then
                                         local tweenService = game:GetService("TweenService")
                                         local distance = (humanoidRootPart.Position - destination.Position).Magnitude
                                         local duration = distance / tonumber(DefaultMobMoveSpeed or 150)
@@ -359,7 +381,7 @@ local LootsToggle = CheatTab:CreateToggle({
                                         local tween = tweenService:Create(humanoidRootPart, tweenInfo, {CFrame = destination})
                                         tween:Play()
                                         tween.Completed:Wait()
-                                    elseif DefaultLootMethod == "Teleport" then
+                                    elseif _G.DefaultLootMethod == "Teleport" then
                                         humanoidRootPart.CFrame = destination
                                     end
                                 end
@@ -382,35 +404,35 @@ local LootsToggle = CheatTab:CreateToggle({
 
 local ChestsSection = CheatTab:CreateSection("Loot Chest")
 
-local LootChestMethod = {"Teleport", "Tween"}
-local DefaultLootChestMethod = "Teleport"
-local LootChestSpeed = {"50", "100", "150", "200"}
-local DefaultLootChestSpeed = "150"
+_G.LootChestMethod = {"Teleport", "Tween"}
+_G.DefaultLootChestMethod = "Teleport"
+_G.LootChestSpeed = {"50", "100", "150", "200"}
+_G.DefaultLootChestSpeed = "150"
 
 local LootMethodDropdown = CheatTab:CreateDropdown({
     Name = "Loot Chest Method",
-    Options = LootChestMethod,
-    CurrentOption = DefaultLootChestMethod,
+    Options = _G.LootChestMethod,
+    CurrentOption = _G.DefaultLootChestMethod,
     MultipleOptions = false,
     Callback = function(option)
         if type(option) == "table" then
-            DefaultLootChestMethod = option[1]
+            _G.DefaultLootChestMethod = option[1]
         else
-            DefaultLootChestMethod = option
+            _G.DefaultLootChestMethod = option
         end
     end
 })
 
 local LootMethodDropdown = CheatTab:CreateDropdown({
     Name = "Loot Chest Tween Speed",
-    Options = LootChestSpeed,
-    CurrentOption = DefaultLootChestSpeed,
+    Options = _G.LootChestSpeed,
+    CurrentOption = _G.DefaultLootChestSpeed,
     MultipleOptions = false,
     Callback = function(option)
         if type(option) == "table" then
-            DefaultLootChestSpeed = option[1]
+            _G.DefaultLootChestSpeed = option[1]
         else
-            DefaultLootChestSpeed = option
+            _G.DefaultLootChestSpeed = option
         end
     end
 })
@@ -424,11 +446,25 @@ local ChestToggle = CheatTab:CreateToggle({
             while _G.chest do
                 task.wait()
                 pcall(function()
+                    local player1 = game.Players.LocalPlayer
+                    local character1 = player1.Character or player1.CharacterAdded:Wait()
+                    local function onCharacterRespawn()
+                    character1 = player1.Character or player1.CharacterAdded:Wait()
+                end
+                player1.CharacterAdded:Connect(onCharacterRespawn)
+                
                     for i, v in pairs(workspace:GetDescendants()) do
                         if v.ClassName == "ProximityPrompt" and v.Parent.Name == "HumanoidRootPart" and not v.Parent.Parent:GetAttribute("OpenParticlesType") and v.Enabled and v.ActionText == "Open" and _G.chest then
                             repeat
+                                local player1 = game.Players.LocalPlayer
+                                local character1 = player1.Character or player1.CharacterAdded:Wait()
+                                local function onCharacterRespawn()
+                                character1 = player1.Character or player1.CharacterAdded:Wait()
+                            end
+                            player1.CharacterAdded:Connect(onCharacterRespawn)
+                            
                                 task.wait()
-                                if DefaultLootChestMethod == "Tween" then
+                                if _G.DefaultLootChestMethod == "Tween" then
                                     local destination = v.Parent.CFrame
                                     local tweenService = game:GetService("TweenService")
                                     local distance = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - destination.Position).Magnitude
@@ -438,7 +474,7 @@ local ChestToggle = CheatTab:CreateToggle({
                                     local tween = tweenService:Create(game.Players.LocalPlayer.Character.HumanoidRootPart, tweenInfo, {CFrame = destination})
                                     tween:Play()
                                     tween.Completed:Wait()
-                                elseif DefaultLootChestMethod == "Teleport" then
+                                elseif _G.DefaultLootChestMethod == "Teleport" then
                                     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Parent.CFrame
                                 end
                                 fireproximityprompt(v)
@@ -460,6 +496,13 @@ local ChestToggle = CheatTab:CreateToggle({
         if tchest then
             _G.tchest = true
             task.spawn(function()
+                local player1 = game.Players.LocalPlayer
+                local character1 = player1.Character or player1.CharacterAdded:Wait()
+                local function onCharacterRespawn()
+                character1 = player1.Character or player1.CharacterAdded:Wait()
+            end
+            player1.CharacterAdded:Connect(onCharacterRespawn)
+            
                 while _G.tchest do
                     local player = game.Players.LocalPlayer
                     local character = player.Character or player.CharacterAdded:Wait()
@@ -476,7 +519,7 @@ local ChestToggle = CheatTab:CreateToggle({
                                     local proximityPrompt = chest:FindFirstChild("HumanoidRootPart"):FindFirstChild("ProximityPrompt")
                                     
                                     if gold and gold:IsA("BasePart") and proximityPrompt then
-                                        if DefaultLootChestMethod == "Tween" then
+                                        if _G.DefaultLootChestMethod == "Tween" then
                                             local destination = gold.CFrame
                                             local tweenService = game:GetService("TweenService")
                                             local distance = (humanoidRootPart.Position - destination.Position).Magnitude
@@ -486,7 +529,7 @@ local ChestToggle = CheatTab:CreateToggle({
                                             local tween = tweenService:Create(humanoidRootPart, tweenInfo, {CFrame = destination})
                                             tween:Play()
                                             tween.Completed:Wait()
-                                        elseif DefaultLootChestMethod == "Teleport" then
+                                        elseif _G.DefaultLootChestMethod == "Teleport" then
                                             humanoidRootPart.CFrame = gold.CFrame
                                         end
                                         task.wait(0.5)
@@ -510,16 +553,15 @@ local ChestToggle = CheatTab:CreateToggle({
     end,
 })
 
-
 local TweenService = game:GetService("TweenService")
- local TpMethods = {"Instant", "Tween"}
- local DefaultTp = "Unknown"
- local Location = {
+local TpMethods = {"Instant", "Tween"}
+local DefaultTp = "Unknown"
+local Location = {
      "Port Jackson", "Eruption Island", "Shadow Isles", "Ancient Shores", "Pharaoh's Dunes", "Monster's Borough 1", "Monster's Borough 2", "Monster's Borough 3"
  }
- local DefaultLocation = "Unknown"
- local TweenSpeed = 100
- local LocationPositions = {
+local DefaultLocation = "Unknown"
+local TweenSpeed = 100
+local LocationPositions = {
      ["Port Jackson"] = CFrame.new(-3, 55, -125),
      ["Eruption Island"] = CFrame.new(3023, 52, 1323),
      ["Shadow Isles"] = CFrame.new(2197, 43, -2216),
@@ -541,7 +583,7 @@ local TweenService = game:GetService("TweenService")
          else
              DefaultLocation = option
          end
-         DefaultLocationPosition = LocationPositions[DefaultLocation] or CFrame.new() 
+         DefaultLocationPosition = LocationPositions[DefaultLocation] or CFrame.new()  -- อัพเดตตำแหน่งของ CFrame ตามที่เลือก
          print("Selected Location: ", DefaultLocation)
          Rayfield:Notify({
              Title = "Location Selected",
@@ -579,7 +621,7 @@ local TweenService = game:GetService("TweenService")
      Range = {20, 190},
      Increment = 5,
      Suffix = "Speed",
-     CurrentValue = 90,
+     CurrentValue = 100,
      Flag = "Slider1",
      Callback = function(Value)
          if type(Value) == "table" then
@@ -667,7 +709,7 @@ game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.EnterDoor:Invo
 local chests = {"stonechest", "silverchest", "goldchest", "timberchest", "crownchest", "elvenchest"}
 local selectchest = "Unknown"
 
-local Ramdomy = MainWindow:CreateTab("Gacha")
+local Ramdomy = MainWindow:CreateTab("Chest")
 local Section = Ramdomy:CreateSection("Buy Chest")
 local Dropdown = Ramdomy:CreateDropdown({
     Name = "Chest Selected",
