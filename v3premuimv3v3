@@ -92,6 +92,14 @@ local function ParseVector3(text)
     end
 end
 
+local SellAllButton = CheatTab:CreateButton({
+    Name = "Press To Set Bobber Position",
+    Callback = function()
+        local ply = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+        DefaultBobberLocation = ParseVector3(ply)
+    end,
+})
+
 local Input = CheatTab:CreateInput({
     Name = "Lock Bobber Position",
     CurrentValue = tostring(DefaultBobberLocation),
@@ -115,7 +123,7 @@ local AutoFishToggle = CheatTab:CreateToggle({
                 if tool and tool:GetAttribute("type") == "Rods" then
                     local ply = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
                     if ply then
-                        local targetCFrame = ply.CFrame * CFrame.new(DefaultBobberLocation)
+                        local targetCFrame = CFrame.new(DefaultBobberLocation)
                         for _, v in pairs(tool:GetDescendants()) do
                             if v.Name == "FakeBobber" or v.Name == "Bobber" then
                                 v.CFrame = targetCFrame
