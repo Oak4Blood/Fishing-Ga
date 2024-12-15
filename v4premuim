@@ -153,10 +153,10 @@ local AutoFishToggle = CheatTab:CreateToggle({
                 if tool and tool:GetAttribute("type") == "Rods" then
                     for _, v in pairs(tool:GetDescendants()) do
                         if v.Name == "FakeBobber" and v:IsA("Instance") and v.Transparency == 1 then
-                            wait(0.1)
+                            wait(0.5)
                             game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.FishBiting:InvokeServer()
                             repeat
-                                task.wait(0.1)
+                                task.wait(0.5)
                             until v.Transparency == 0 or not _G.instantbite
                         end
                     end
