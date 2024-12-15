@@ -77,21 +77,32 @@ local AutoSellToggle = CheatTab:CreateToggle({
 
 local FishingSection = CheatTab:CreateSection("Fishing")
 
-DefaultBobberLocation = Vector3.new(Text)
+local DefaultBobberLocation = Vector3.new(0, 5, 0)
 
-
+local function ParseVector3(text)
+    local success, x, y, z = pcall(function()
+        local parts = text:split(",")
+        return tonumber(parts[1]), tonumber(parts[2]), tonumber(parts[3])
+    end)
+    if success and x and y and z then
+        return Vector3.new(x, y, z)
+    else
+        warn("Invalid input for Vector3. Using default value.")
+        return DefaultBobberLocation
+    end
+end
 
 local Input = CheatTab:CreateInput({
     Name = "Lock Bobber Position",
-    CurrentValue = DefaultBobberLocation,
-    PlaceholderText = "Input Placeholder",
+    CurrentValue = tostring(DefaultBobberLocation),
+    PlaceholderText = "e.g., 0,5,0",
     RemoveTextAfterFocusLost = false,
     Callback = function(Text)
-            DefaultBobberLocation = Vector3.new(Text)
+        DefaultBobberLocation = ParseVector3(Text)
     end,
- })
+})
 
- local AutoFishToggle = CheatTab:CreateToggle({
+local AutoFishToggle = CheatTab:CreateToggle({
     Name = "Lock Bobber",
     CurrentValue = false,
     Callback = function(InFishs)
@@ -118,7 +129,7 @@ local Input = CheatTab:CreateInput({
         else
             _G.looplockbobber = false
         end
-    end
+    end,
 })
 
 local AutoFishToggle = CheatTab:CreateToggle({
